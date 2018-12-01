@@ -7,14 +7,29 @@ import javafx.stage.Stage
 
 class Main extends Application {
   override def start(stage: Stage): Unit = {
-    val root: Parent = FXMLLoader load getClass.getResource("/eu/shooktea/passkeeper/ui/Window.fxml")
-    val scene = new Scene(root, 600, 400)
-    stage setTitle "Password Keeper"
-    stage setScene scene
-    stage show()
+    Main.showWindow("Window", "Password Keeper", stage)
   }
 }
 
 object Main {
   def main(args: Array[String]) : Unit = Application.launch(classOf[Main], args: _*)
+
+  def showWindow(fxmlFileName: String, title: String, stage: Stage = null) : Unit = {
+    if (stage != null) {
+      Main.stage = stage
+    }
+    val root: Parent = FXMLLoader load getClass.getResource("/eu/shooktea/passkeeper/ui/" + fxmlFileName + ".fxml")
+    if (scene == null) {
+      scene = new Scene(root, 600, 400)
+    }
+    else {
+      scene setRoot root
+    }
+    Main.stage setTitle title
+    Main.stage setScene scene
+    Main.stage show()
+  }
+
+  private var stage: Stage = _
+  private var scene: Scene = _
 }
