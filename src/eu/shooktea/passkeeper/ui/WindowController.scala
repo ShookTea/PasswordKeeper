@@ -5,7 +5,5 @@ import javafx.fxml.FXML
 
 class WindowController {
   @FXML
-  def createNewNote() : Unit = {
-    Main.showWindow("Note", "New note")
-  }
+  def createNewNote() : Unit = Main showWindow "Note"
 }

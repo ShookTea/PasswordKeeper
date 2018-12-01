@@ -14,7 +14,7 @@ class Main extends Application {
 object Main {
   def main(args: Array[String]) : Unit = Application.launch(classOf[Main], args: _*)
 
-  def showWindow(fxmlFileName: String, title: String, stage: Stage = null) : Unit = {
+  def showWindow(fxmlFileName: String, title: String = null, stage: Stage = null) : Unit = {
     if (stage != null) {
       Main.stage = stage
     }
@@ -25,11 +25,18 @@ object Main {
     else {
       scene setRoot root
     }
-    Main.stage setTitle title
+    Main.stage setTitle (title match {
+      case s:String => s
+      case null => windows(fxmlFileName)
+    })
     Main.stage setScene scene
     Main.stage show()
   }
 
   private var stage: Stage = _
   private var scene: Scene = _
+  private val windows: Map[String, String] = Map(
+    ("Window", "Password Keeper"),
+    ("Note", "Note editing")
+  )
 }
