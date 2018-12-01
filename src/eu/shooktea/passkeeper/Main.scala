@@ -1,0 +1,7 @@
+package eu.shooktea.passkeeper
+
+object Main {
+  def main(args: Array[String]) : Unit = {
+    println("Hello, world!")
+  }
+}
