@@ -6,10 +6,38 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.security.*;
 
+/**
+ * The First Abstract Format is a base for many formats.
+ *
+ * Format is built on three blocks: password block, key block and data block. All of them have exact same structure:
+ * SIZE (INT) - size of DATA in bytes
+ * DATA (BYTE[]) - bytes of data in block
+ *
+ * First block, the Password block, keeps user password, double hashed in SHA-256.
+ *
+ * Second block, the Key block, keeps encoded AES key. That key is randomly generated during every saving. It is encoded
+ * with another AES key, made of SHA-256-hashed user password.
+ *
+ * Third block, the Data block, is a data that is encoded by AES key hidden in second block. Format of this data is not
+ * defined in First Abstract Format, but in all implementations of that format.
+ *
+ * If function {@code AES(DATA <- KEY)} represents a result of encoding DATA by AES algorithm with KEY key and function
+ * {@code SHA(DATA)} represents a result of hashing DATA with SHA-256 algorithm, then structure of First Abstract Format
+ * file is:
+ *
+ * * SHA(SHA(PASSWORD))
+ * * AES(KEY <- SHA(PASSWORD))
+ * * AES(DATA <- KEY)
+ *
+ * Where:
+ * * DATA is data to be hidden in file,
+ * * KEY is a randomly generated key,
+ * * PASSWORD is a password choosen by user.
+ */
 public abstract class AbstractFormat implements Format {
 
-    abstract void loadFromInputStream(InputStream dis);
-    abstract void storeToOutputStream(OutputStream dos);
+    abstract void loadFromInputStream(InputStream is) throws IOException;
+    abstract void storeToOutputStream(OutputStream os) throws IOException;
 
     private static SecureRandom random = new SecureRandom();
     private static KeyGenerator generator = null;
@@ -83,7 +111,7 @@ public abstract class AbstractFormat implements Format {
         return new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
     }
 
-    private void decodeData(Key key, byte[] codedData) throws InvalidKeyException {
+    private void decodeData(Key key, byte[] codedData) throws Exception {
         Cipher cipher = getCipher();
         cipher.init(Cipher.DECRYPT_MODE, key);
         ByteArrayInputStream bais = new ByteArrayInputStream(codedData);
@@ -117,7 +145,7 @@ public abstract class AbstractFormat implements Format {
         }
     }
 
-    private byte[] encodeData(Key key) throws InvalidKeyException {
+    private byte[] encodeData(Key key) throws Exception {
         Cipher cipher = getCipher();
         cipher.init(Cipher.ENCRYPT_MODE, key);
         ByteArrayOutputStream dataFromFormat = new ByteArrayOutputStream();

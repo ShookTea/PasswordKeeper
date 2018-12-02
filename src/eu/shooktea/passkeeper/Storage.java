@@ -36,6 +36,10 @@ public class Storage {
                 .collect(Collectors.toList());
     }
 
+    public static List<Cipherable> getAll() {
+        return elements;
+    }
+
     private static List<Cipherable> elements = new ArrayList<>();
     private static int editedIndex = -1;
 }
