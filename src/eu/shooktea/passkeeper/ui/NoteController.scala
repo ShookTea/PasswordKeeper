@@ -1,6 +1,7 @@
 package eu.shooktea.passkeeper.ui
 
-import eu.shooktea.passkeeper.Main
+import eu.shooktea.passkeeper.`type`.Note
+import eu.shooktea.passkeeper.{Main, Storage}
 import javafx.fxml.FXML
 import javafx.scene.control.{TextArea, TextField}
 
@@ -13,7 +14,7 @@ class NoteController {
   def saveNote() : Unit = {
     val title: String = noteTitle.getText
     val text: String = noteText.getText
-
+    Storage savedCipherableElement Note(title, text)
     Main showWindow "Window"
   }
 }
