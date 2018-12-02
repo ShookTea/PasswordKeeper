@@ -1,5 +1,6 @@
 package eu.shooktea.passkeeper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +41,23 @@ public class Storage {
         return elements;
     }
 
+    private static File getFile() {
+        if (file == null) {
+            String url = Main.class.getResource("/eu/shooktea/passkeeper/Main.class").toString();
+            if (url.startsWith("jar:file:")) {
+                url = url.substring("jar:file:".length()).replaceAll("!.*$", "");
+            }
+            else {
+                url = url.substring("file:".length());
+            }
+            File classOrJarFile = new File(url);
+            File directory = classOrJarFile.getParentFile();
+            file = new File(directory, ".password_keeper");
+        }
+        return file;
+    }
+
     private static List<Cipherable> elements = new ArrayList<>();
     private static int editedIndex = -1;
+    private static File file = null;
 }
