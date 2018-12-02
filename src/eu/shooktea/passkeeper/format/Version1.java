@@ -5,6 +5,7 @@ import eu.shooktea.passkeeper.Storage;
 import eu.shooktea.passkeeper.type.Note;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,7 +22,15 @@ import java.util.List;
 public class Version1 extends AbstractFormat {
     @Override
     void loadFromInputStream(InputStream is) throws IOException {
-        DataInputStream dis = new DataInputStream(is);
+        byte[] b = new byte[2000];
+        int readed = is.read(b, 0, b.length);
+        System.out.println("[" + readed + "]");
+        byte[] c = Arrays.copyOfRange(b, 0, readed);
+        for (byte byt : c) {
+            System.out.print(byt + " ");
+        }
+        ByteArrayInputStream bais = new ByteArrayInputStream(c);
+        DataInputStream dis = new DataInputStream(bais);
         String identifier;
         do {
             identifier = dis.readUTF();
@@ -40,12 +49,20 @@ public class Version1 extends AbstractFormat {
 
     @Override
     void storeToOutputStream(OutputStream os) throws IOException {
-        DataOutputStream dos = new DataOutputStream(os);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputStream dos = new DataOutputStream(baos);
         List<Cipherable> elements = Storage.getAll();
         for (Cipherable element : elements) {
             storeElement(element, dos);
         }
         dos.writeUTF("EOF");
+
+        byte[] bytes = baos.toByteArray();
+        os.write(bytes);
+        System.out.println("[" + bytes.length + "]");
+        for (byte b : bytes) {
+            System.out.print(b + " ");
+        }
     }
 
     void storeElement(Cipherable element, DataOutputStream dos) throws IOException {
@@ -66,6 +83,7 @@ public class Version1 extends AbstractFormat {
     }
 
     protected static void saveNote(DataOutputStream dos, Note note) throws IOException {
+        dos.writeUTF("NOTE");
         String title = note.getTitle();
         if (title == null || title.length() == 0) {
             dos.writeBoolean(false);

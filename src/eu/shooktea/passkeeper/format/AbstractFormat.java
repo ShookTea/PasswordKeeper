@@ -6,6 +6,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.security.*;
+import java.util.Arrays;
 
 /**
  * The First Abstract Format is a base for many formats.
@@ -119,14 +120,13 @@ public abstract class AbstractFormat implements Format {
     }
 
     private void decodeData(Key key, byte[] codedData) throws Exception {
-        ByteArrayInputStream bais = new ByteArrayInputStream(codedData);
-        byte[] iv = new byte[16];
-        bais.read(iv);
+        byte[] iv = Arrays.copyOfRange(codedData, 0, 16);
+        byte[] data = Arrays.copyOfRange(codedData, 16, codedData.length);
         Cipher cipher = getCipher();
         cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
-        CipherInputStream cis = new CipherInputStream(bais, cipher);
-        this.loadFromInputStream(cis);
-        cis.close();
+        ByteArrayInputStream bais = new ByteArrayInputStream(cipher.doFinal(data));
+        this.loadFromInputStream(bais);
+        bais.close();
     }
 
     @Override
@@ -162,10 +162,9 @@ public abstract class AbstractFormat implements Format {
         cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
         ByteArrayOutputStream dataFromFormat = new ByteArrayOutputStream();
         dataFromFormat.write(iv);
-        CipherOutputStream cos = new CipherOutputStream(dataFromFormat, cipher);
-        this.storeToOutputStream(cos);
-        cos.close();
-        return dataFromFormat.toByteArray();
+        this.storeToOutputStream(dataFromFormat);
+        dataFromFormat.close();
+        return cipher.doFinal(dataFromFormat.toByteArray());
     }
 
     private byte[] encodeKey(Key key, byte[] passwordHash) throws Exception {
