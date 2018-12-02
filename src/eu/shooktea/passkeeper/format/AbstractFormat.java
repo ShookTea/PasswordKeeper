@@ -15,22 +15,7 @@ public abstract class AbstractFormat implements Format {
 
     private static SecureRandom random = new SecureRandom();
     private static KeyGenerator generator = null;
-    private static MessageDigest digest = null;
 
-    private static int SALT_LENGTH = 64;
-
-    private static byte[] mergeArrays(byte[]... a) {
-        int length = 0;
-        for (byte[] c : a) length += c.length;
-        byte[] ret = new byte[length];
-        int retIndex = 0;
-        for (byte[] array : a) {
-            for (int i = 0; i < array.length; i++, retIndex++) {
-                ret[retIndex] = array[i];
-            }
-        }
-        return ret;
-    }
 
     public static String getUserPassword() {
         return "Temporary password";
@@ -44,35 +29,6 @@ public abstract class AbstractFormat implements Format {
                 generator.init(keyBitSize, random);
             }
             return generator.generateKey();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static byte[] hash(byte[] input) {
-        try {
-            if (digest == null) {
-                digest = MessageDigest.getInstance("SHA-256");
-            }
-            byte[] salt = new byte[SALT_LENGTH];
-            random.nextBytes(salt);
-            byte[] sum = mergeArrays(salt, input);
-            byte[] hash = digest.digest(sum);
-            return mergeArrays(salt, hash);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static boolean validateHash(byte[] hashed, byte[] input) {
-        try {
-            if (digest == null) {
-                digest = MessageDigest.getInstance("SHA-256");
-            }
-            byte[] salt = Arrays.copyOfRange(hashed, 0, SALT_LENGTH);
-            byte[] sum = mergeArrays(salt, input);
-            byte[] hash = digest.digest(sum);
-            return Arrays.equals(hash, hashed);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
