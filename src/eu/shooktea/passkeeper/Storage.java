@@ -1,6 +1,8 @@
 package eu.shooktea.passkeeper;
 
 import eu.shooktea.passkeeper.format.Format;
+import eu.shooktea.passkeeper.format.IncorrectPasswordException;
+import eu.shooktea.passkeeper.ui.PasswordDialog;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Storage {
@@ -54,8 +57,23 @@ public class Storage {
             f.createNewFile();
         }
         else {
-            FileInputStream fis = new FileInputStream(f);
-            Format.load(fis);
+            PasswordDialog pd = new PasswordDialog();
+            boolean decoded = false;
+            while (!decoded) {
+                Optional<char[]> password = pd.showAndWait();
+                if (password.isPresent()) {
+                    Storage.password = password.get();
+                    FileInputStream fis = new FileInputStream(f);
+                    try {
+                        Format.load(fis);
+                        decoded = true;
+                    } catch (IncorrectPasswordException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    System.exit(0);
+                }
+            }
         }
     }
 
@@ -90,7 +108,12 @@ public class Storage {
         return file;
     }
 
+    public static char[] getPassword() {
+        return password;
+    }
+
     private static List<Cipherable> elements = new ArrayList<>();
     private static int editedIndex = -1;
+    private static char[] password = "temporary password".toCharArray();
     private static File file = null;
 }

@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface Format {
     int getVersionNumber();
-    void loadFromStream(InputStream is);
+    void loadFromStream(InputStream is) throws IncorrectPasswordException;
     void writeToStream(OutputStream os);
 
     List<Format> versions = Arrays.asList(
@@ -29,7 +29,7 @@ public interface Format {
         dos.close();
     }
 
-    static void load(InputStream is) throws IOException {
+    static void load(InputStream is) throws IOException, IncorrectPasswordException {
         DataInputStream dis = new DataInputStream(is);
         int magicNumber = dis.readInt();
         if (magicNumber != MAGIC_NUMBER) {

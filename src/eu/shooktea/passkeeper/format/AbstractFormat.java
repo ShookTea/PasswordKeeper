@@ -1,10 +1,13 @@
 package eu.shooktea.passkeeper.format;
 
+import eu.shooktea.passkeeper.Storage;
+
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.Arrays;
 
@@ -56,10 +59,6 @@ public abstract class AbstractFormat implements Format {
         return cipher;
     }
 
-    private static String getUserPassword() {
-        return "Temporary password";
-    }
-
     private static Key generateKey() {
         try {
             if (generator == null) {
@@ -74,16 +73,16 @@ public abstract class AbstractFormat implements Format {
     }
 
     @Override
-    public void loadFromStream(InputStream is) {
+    public void loadFromStream(InputStream is) throws IncorrectPasswordException {
         try {
             DataInputStream dis = new DataInputStream(is);
-            String password = getUserPassword();
-            byte[] passwordHashed = Hasher.hash(password.getBytes(Charset.forName("UTF-8")));
+            char[] password = Storage.getPassword();
+            byte[] passwordHashed = Hasher.hash(new String(password).getBytes(StandardCharsets.UTF_8));
 
             byte[] passwordBytes = new byte[dis.readInt()];
             dis.read(passwordBytes);
             if (!Hasher.validateHash(passwordBytes, passwordHashed)) {
-                throw new Exception("Incorrect password");
+                throw new IncorrectPasswordException();
             }
 
             byte[] keyBytes = new byte[dis.readInt()];
@@ -96,6 +95,8 @@ public abstract class AbstractFormat implements Format {
 
             decodeData(key, dataBytes);
 
+        } catch (IncorrectPasswordException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -133,8 +134,8 @@ public abstract class AbstractFormat implements Format {
     public void writeToStream(OutputStream os) {
         try {
             Key key = generateKey();
-            String password = getUserPassword();
-            byte[] passwordHash = Hasher.hash(password.getBytes(Charset.forName("UTF-8")));
+            char[] password = Storage.getPassword();
+            byte[] passwordHash = Hasher.hash(new String(password).getBytes(StandardCharsets.UTF_8));
 
             byte[] passwordBytes = Hasher.hash(passwordHash);
             byte[] keyBytes = encodeKey(key, passwordHash);
