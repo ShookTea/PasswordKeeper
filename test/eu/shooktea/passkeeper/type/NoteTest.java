@@ -20,15 +20,4 @@ public class NoteTest {
         assertEquals(title, n.getTitle());
         assertEquals(text, n.getText());
     }
-
-    @Test
-    public void saveAndReadByteArray() {
-        String title = "Title of a note";
-        String text = "Lorem ipsum dolor sit amet";
-        Note a = new Note(title, text);
-        byte[] array = a.toBytes();
-        Note b = new Note().fromBytes(array);
-        assertEquals(title, b.getTitle());
-        assertEquals(text, b.getText());
-    }
 }
