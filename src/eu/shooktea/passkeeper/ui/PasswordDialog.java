@@ -15,6 +15,7 @@ public class PasswordDialog extends Dialog<char[]> {
     public PasswordDialog() {
         setTitle("Password");
         setHeaderText("Please enter your password.");
+        setWidth(300);
 
         ButtonType passwordButtonType = new ButtonType("Decrypt", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(passwordButtonType, ButtonType.CANCEL);
@@ -40,7 +41,8 @@ public class PasswordDialog extends Dialog<char[]> {
         });
     }
 
-    public PasswordField getPasswordField() {
-        return passwordField;
+    public void error(String message) {
+        setHeaderText(message);
+        passwordField.setText("");
     }
 }

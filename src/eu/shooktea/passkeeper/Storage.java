@@ -2,13 +2,16 @@ package eu.shooktea.passkeeper;
 
 import eu.shooktea.passkeeper.format.Format;
 import eu.shooktea.passkeeper.format.IncorrectPasswordException;
+import eu.shooktea.passkeeper.ui.CreatePasswordDialog;
 import eu.shooktea.passkeeper.ui.PasswordDialog;
+import javafx.scene.control.PasswordField;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -54,7 +57,26 @@ public class Storage {
     public static void loadData() throws IOException {
         File f = getFile();
         if (!f.exists()) {
-            f.createNewFile();
+            CreatePasswordDialog cpd = new CreatePasswordDialog();
+            boolean passwordSet = false;
+            while (!passwordSet) {
+                Optional<char[][]> passwords = cpd.showAndWait();
+                if (passwords.isPresent()) {
+                    if (!Arrays.equals(passwords.get()[0], passwords.get()[1])) {
+                        cpd.error("Passwords must be equal.");
+                    }
+                    else if (passwords.get()[0].length < 8) {
+                        cpd.error("Your password should be at least 8 characters long.");
+                    }
+                    else {
+                        Storage.password = passwords.get()[0];
+                        passwordSet = true;
+                        f.createNewFile();
+                    }
+                } else {
+                    System.exit(0);
+                }
+            }
         }
         else {
             PasswordDialog pd = new PasswordDialog();
@@ -68,8 +90,7 @@ public class Storage {
                         Format.load(fis);
                         decoded = true;
                     } catch (IncorrectPasswordException e) {
-                        pd.getPasswordField().setText("");
-                        pd.setHeaderText("Wrong password. Please try again.");
+                        pd.error("Wrong password. Please try again.");
                     }
                 } else {
                     System.exit(0);
