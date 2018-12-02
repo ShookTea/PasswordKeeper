@@ -30,6 +30,6 @@ public class WindowController {
 
     @FXML
     private void createNewNote() {
-        Main.showWindow("Note");
+        Main.showWindow("Note", "Create new note");
     }
 }
