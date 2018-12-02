@@ -15,23 +15,20 @@ public interface Format {
 
     List<Format> versions = Arrays.asList();
 
-    static void saveToFile(File file) throws IOException {
-        if (versions.size() == 0) throw new IOException("There are no defined versions");
+    static void save(OutputStream os) throws IOException {
+        if (versions.size() == 0) throw new RuntimeException("There are no defined versions");
         Format format = versions.stream()
                 .sorted(Comparator.comparingInt(Format::getVersionNumber))
                 .findFirst().get();
-
-        FileOutputStream fos = new FileOutputStream(file);
-        DataOutputStream dos = new DataOutputStream(fos);
+        DataOutputStream dos = new DataOutputStream(os);
         dos.writeInt(MAGIC_NUMBER);
         dos.writeInt(format.getVersionNumber());
         byte[] data = format.storeData();
         dos.write(format.storeData(), 0, data.length);
     }
 
-    static void loadFromFile(File file) throws IOException {
-        FileInputStream fis = new FileInputStream(file);
-        DataInputStream dis = new DataInputStream(fis);
+    static void load(InputStream is) throws IOException {
+        DataInputStream dis = new DataInputStream(is);
         int magicNumber = dis.readInt();
         if (magicNumber != MAGIC_NUMBER) {
             dis.close();
