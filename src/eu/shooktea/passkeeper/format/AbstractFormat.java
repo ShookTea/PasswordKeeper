@@ -4,9 +4,7 @@ import javax.crypto.KeyGenerator;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.security.Key;
-import java.security.MessageDigest;
 import java.security.SecureRandom;
-import java.util.Arrays;
 
 public abstract class AbstractFormat implements Format {
 
@@ -15,7 +13,6 @@ public abstract class AbstractFormat implements Format {
 
     private static SecureRandom random = new SecureRandom();
     private static KeyGenerator generator = null;
-
 
     public static String getUserPassword() {
         return "Temporary password";
