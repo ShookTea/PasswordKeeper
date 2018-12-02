@@ -1,10 +1,12 @@
 package eu.shooktea.passkeeper.format;
 
-import javax.crypto.KeyGenerator;
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.security.Key;
-import java.security.SecureRandom;
+import java.nio.charset.Charset;
+import java.security.*;
 
 public abstract class AbstractFormat implements Format {
 
@@ -13,6 +15,18 @@ public abstract class AbstractFormat implements Format {
 
     private static SecureRandom random = new SecureRandom();
     private static KeyGenerator generator = null;
+    private static Cipher cipher = null;
+
+    private static Cipher getCipher() {
+        if (cipher == null) {
+            try {
+                cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return cipher;
+    }
 
     public static String getUserPassword() {
         return "Temporary password";
@@ -29,5 +43,56 @@ public abstract class AbstractFormat implements Format {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public byte[] storeData() {
+        try {
+            Key key = generateKey();
+            String password = getUserPassword();
+            byte[] passwordHash = Hasher.hash(password.getBytes(Charset.forName("UTF-8")));
+
+            byte[] passwordBytes = Hasher.hash(passwordHash);
+            byte[] keyBytes = encodeKey(key, passwordHash);
+            byte[] dataBytes = encodeData(key);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            DataOutputStream dos = new DataOutputStream(baos);
+
+            dos.writeInt(passwordBytes.length);
+            dos.write(passwordBytes);
+            dos.writeInt(keyBytes.length);
+            dos.write(keyBytes);
+            dos.writeInt(dataBytes.length);
+            dos.write(dataBytes);
+
+            dos.close();
+            return baos.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private byte[] encodeData(Key key) throws InvalidKeyException {
+        Cipher cipher = getCipher();
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        ByteArrayOutputStream dataFromFormat = new ByteArrayOutputStream();
+        CipherOutputStream cos = new CipherOutputStream(dataFromFormat, cipher);
+        DataOutputStream dos = new DataOutputStream(cos);
+        this.storeToOutputStream(dos);
+        return dataFromFormat.toByteArray();
+    }
+
+    private byte[] encodeKey(Key key, byte[] passwordHash) throws Exception {
+        byte[] keyToUse = new byte[32];
+        for (int i = 0; i < keyToUse.length && i < passwordHash.length; i++) {
+            keyToUse[i] = passwordHash[i];
+        }
+        Key newKey = new SecretKeySpec(keyToUse, 0, 32, "AES");
+        Cipher cipher = getCipher();
+        cipher.init(Cipher.ENCRYPT_MODE, newKey);
+
+        byte[] encodedKey = key.getEncoded();
+        return cipher.doFinal(encodedKey);
     }
 }
