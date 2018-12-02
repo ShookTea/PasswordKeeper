@@ -4,6 +4,9 @@ import eu.shooktea.passkeeper.Cipherable;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Note implements Cipherable {
     public Note(String title, String text) {
         this.title = new SimpleStringProperty(title);
@@ -12,6 +15,14 @@ public class Note implements Cipherable {
 
     public Note() {
         this("", "");
+    }
+
+    @Override
+    public Map<String, String> getColumnsWithProperties() {
+        Map<String, String> ret = new HashMap<>();
+        ret.put("Title", "title");
+        ret.put("Text", "text");
+        return ret;
     }
 
     public String getTitle() {
