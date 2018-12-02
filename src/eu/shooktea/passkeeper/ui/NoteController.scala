@@ -9,4 +9,11 @@ class NoteController {
   @FXML var noteText: TextArea = _
 
   def goBack() : Unit = Main showWindow "Window"
+
+  def saveNote() : Unit = {
+    val title: String = noteTitle.getText
+    val text: String = noteText.getText
+
+    Main showWindow "Window"
+  }
 }
