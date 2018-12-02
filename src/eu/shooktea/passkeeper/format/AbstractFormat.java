@@ -2,6 +2,7 @@ package eu.shooktea.passkeeper.format;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -40,6 +41,25 @@ public abstract class AbstractFormat implements Format {
                 generator.init(keyBitSize, random);
             }
             return generator.generateKey();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void loadFromData(byte[] data) {
+        try {
+            ByteArrayInputStream bais = new ByteArrayInputStream(data);
+            DataInputStream dis = new DataInputStream(bais);
+
+            byte[] passwordBytes = new byte[dis.readInt()];
+            dis.read(passwordBytes);
+            byte[] keyBytes = new byte[dis.readInt()];
+            dis.read(keyBytes);
+            byte[] dataBytes = new byte[dis.readInt()];
+            dis.read(dataBytes);
+            dis.close();
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
