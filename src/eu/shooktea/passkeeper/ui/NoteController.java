@@ -19,7 +19,7 @@ public class NoteController {
     @FXML
     private void saveNote() {
         Note note = new Note(noteTitle.getText(), noteText.getText());
-        Storage.savedCipherableElement(note);
+        Storage.saveCipherableElement(note);
         Main.showWindow("Window");
     }
 }

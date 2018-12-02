@@ -2,16 +2,14 @@ package eu.shooktea.passkeeper.ui;
 
 import eu.shooktea.passkeeper.Main;
 import eu.shooktea.passkeeper.Storage;
+import eu.shooktea.passkeeper.Type;
 import eu.shooktea.passkeeper.type.Note;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class WindowController {
 
@@ -20,11 +18,7 @@ public class WindowController {
 
     @FXML
     private void initialize() {
-        List<Note> notes = Arrays.stream(Storage.allElements())
-                .filter(cipherable -> cipherable instanceof Note)
-                .map(cipherable -> (Note) cipherable)
-                .collect(Collectors.toList());
-
+        List<Note> notes = Storage.filter(Type.NOTE);
         notesTable.getColumns().clear();
         TableColumn<Note, String> title = new TableColumn<>("Title");
         TableColumn<Note, String> text = new TableColumn<>("Text");
