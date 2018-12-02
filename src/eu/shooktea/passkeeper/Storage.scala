@@ -1,5 +1,8 @@
 package eu.shooktea.passkeeper
 
+import javafx.beans.property.SimpleListProperty
+import javafx.collections.{FXCollections, ObservableList}
+
 object Storage {
 
   def savedCipherableElement(element: Cipherable[_]) : Unit = {
@@ -11,22 +14,24 @@ object Storage {
   }
 
   def store(element: Cipherable[_]) : Unit = {
-    elements = elements :+ element
+    elements add element
   }
 
   def update(index: Int, element: Cipherable[_]) : Unit = {
-    elements.update(index, element)
+    elements set(index, element)
   }
 
   def remove(index: Int) : Unit = {
-    elements = elements.take(index) ++ elements.drop(index + 1)
+    elements remove index
   }
 
-  def allElements() : Array[Cipherable[_]] = elements
+  def getElements() : ObservableList[Cipherable[_]] = elements.get()
+  def setElements(list: ObservableList[Cipherable[_]]) : Unit = elements set list
+  def elementsProperty() : SimpleListProperty[Cipherable[_]] = elements
 
   def ++(element: Cipherable[_]) : Unit = store(element)
   def --(index: Int) : Unit = remove(index)
 
-  private var elements: Array[Cipherable[_]] = Array()
+  private val elements: SimpleListProperty[Cipherable[_]] = new SimpleListProperty(FXCollections.observableArrayList[Cipherable[_]]())
   private var currentlyModifiedIndex: Int = -1
 }
