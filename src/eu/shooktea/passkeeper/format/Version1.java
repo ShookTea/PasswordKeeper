@@ -2,7 +2,6 @@ package eu.shooktea.passkeeper.format;
 
 import eu.shooktea.passkeeper.Cipherable;
 import eu.shooktea.passkeeper.Storage;
-import eu.shooktea.passkeeper.Type;
 import eu.shooktea.passkeeper.type.Note;
 
 import java.io.*;
@@ -22,28 +21,36 @@ import java.util.List;
 public class Version1 extends AbstractFormat {
     @Override
     void loadFromInputStream(InputStream is) throws IOException {
-        loadFromDataInputStream(new DataInputStream(is));
+        DataInputStream dis = new DataInputStream(is);
+        String identifier;
+        do {
+            identifier = dis.readUTF();
+            loadByIdentifier(identifier, dis);
+        }
+        while (!identifier.equals("EOF"));
     }
 
-    protected void loadFromDataInputStream(DataInputStream dis) throws IOException {
-        String identifier;
-        while (!(identifier = dis.readUTF()).equals("EOF")) switch(identifier) {
+    void loadByIdentifier(String identifier, DataInputStream dis) throws IOException {
+        switch (identifier) {
             case "NOTE": Storage.store(loadNote(dis)); break;
+            case "EOF": break;
             default: throw new IOException("Wrong format");
         }
     }
 
     @Override
     void storeToOutputStream(OutputStream os) throws IOException {
-        storeToDataOutputStream(new DataOutputStream(os));
+        DataOutputStream dos = new DataOutputStream(os);
+        List<Cipherable> elements = Storage.getAll();
+        for (Cipherable element : elements) {
+            storeElement(element, dos);
+        }
+        dos.writeUTF("EOF");
     }
 
-    protected void storeToDataOutputStream(DataOutputStream dos) throws IOException {
-        List<Cipherable> entries = Storage.getAll();
-        for (Cipherable element : entries) {
-            if (element instanceof Note) {
-                saveNote(dos, (Note)element);
-            }
+    void storeElement(Cipherable element, DataOutputStream dos) throws IOException {
+        if (element instanceof Note) {
+            saveNote(dos, (Note)element);
         }
     }
 

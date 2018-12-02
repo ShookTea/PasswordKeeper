@@ -1,6 +1,11 @@
 package eu.shooktea.passkeeper;
 
+import eu.shooktea.passkeeper.format.Format;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,10 +29,12 @@ public class Storage {
 
     public static void store(Cipherable c) {
         elements.add(c);
+        saveData();
     }
 
     public static void update(int index, Cipherable c) {
         elements.set(index, c);
+        saveData();
     }
 
     public static <T extends Cipherable> List<T> filter(Type t) {
@@ -39,6 +46,32 @@ public class Storage {
 
     public static List<Cipherable> getAll() {
         return elements;
+    }
+
+    public static void loadData() throws IOException {
+        File f = getFile();
+        if (!f.exists()) {
+            f.createNewFile();
+        }
+        else {
+            FileInputStream fis = new FileInputStream(f);
+            Format.load(fis);
+        }
+    }
+
+    private static void saveData() {
+        try {
+            File f = getFile();
+            if (!f.exists()) {
+                f.createNewFile();
+            }
+            else {
+                FileOutputStream fos = new FileOutputStream(f);
+                Format.save(fos);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static File getFile() {

@@ -1,6 +1,7 @@
 package eu.shooktea.passkeeper.format;
 
 import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.nio.charset.Charset;
@@ -99,24 +100,33 @@ public abstract class AbstractFormat implements Format {
         }
     }
 
-    private Key decodeKey(byte[] keyBytes, byte[] passwordHash) throws Exception {
+    private Key decodeKey(byte[] dataBytes, byte[] passwordHash) throws Exception {
+        ByteArrayInputStream bais = new ByteArrayInputStream(dataBytes);
+        byte[] iv = new byte[16];
+        bais.read(iv);
+        byte[] keyBytes = new byte[bais.read()];
+        bais.read(keyBytes);
+
         byte[] keyToUse = new byte[32];
         for (int i = 0; i < keyToUse.length && i < passwordHash.length; i++) {
             keyToUse[i] = passwordHash[i];
         }
         Key passwordKey = new SecretKeySpec(keyToUse, 0, 32, "AES");
         Cipher cipher = getCipher();
-        cipher.init(Cipher.DECRYPT_MODE, passwordKey);
+        cipher.init(Cipher.DECRYPT_MODE, passwordKey, new IvParameterSpec(iv));
         byte[] decodedKey = cipher.doFinal(keyBytes);
         return new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
     }
 
     private void decodeData(Key key, byte[] codedData) throws Exception {
-        Cipher cipher = getCipher();
-        cipher.init(Cipher.DECRYPT_MODE, key);
         ByteArrayInputStream bais = new ByteArrayInputStream(codedData);
+        byte[] iv = new byte[16];
+        bais.read(iv);
+        Cipher cipher = getCipher();
+        cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
         CipherInputStream cis = new CipherInputStream(bais, cipher);
         this.loadFromInputStream(cis);
+        cis.close();
     }
 
     @Override
@@ -147,23 +157,35 @@ public abstract class AbstractFormat implements Format {
 
     private byte[] encodeData(Key key) throws Exception {
         Cipher cipher = getCipher();
-        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte[] iv = new byte[16];
+        random.nextBytes(iv);
+        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(iv));
         ByteArrayOutputStream dataFromFormat = new ByteArrayOutputStream();
+        dataFromFormat.write(iv);
         CipherOutputStream cos = new CipherOutputStream(dataFromFormat, cipher);
         this.storeToOutputStream(cos);
+        cos.close();
         return dataFromFormat.toByteArray();
     }
 
     private byte[] encodeKey(Key key, byte[] passwordHash) throws Exception {
         byte[] keyToUse = new byte[32];
+        byte[] iv = new byte[16];
+        random.nextBytes(iv);
         for (int i = 0; i < keyToUse.length && i < passwordHash.length; i++) {
             keyToUse[i] = passwordHash[i];
         }
         Key newKey = new SecretKeySpec(keyToUse, 0, 32, "AES");
         Cipher cipher = getCipher();
-        cipher.init(Cipher.ENCRYPT_MODE, newKey);
+        cipher.init(Cipher.ENCRYPT_MODE, newKey, new IvParameterSpec(iv));
 
-        byte[] encodedKey = key.getEncoded();
-        return cipher.doFinal(encodedKey);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        byte[] encodedKey = cipher.doFinal(key.getEncoded());
+        baos.write(iv);
+        baos.write(encodedKey.length);
+        baos.write(encodedKey);
+
+        return baos.toByteArray();
     }
 }

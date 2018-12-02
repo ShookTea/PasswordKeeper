@@ -10,7 +10,8 @@ import java.io.IOException;
 
 public class Main extends Application {
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage) throws Exception {
+        Storage.loadData();
         Main.showWindow("Window", "Password Keeper", stage);
     }
 

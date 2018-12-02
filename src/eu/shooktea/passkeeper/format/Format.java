@@ -13,7 +13,9 @@ public interface Format {
     void loadFromStream(InputStream is);
     void writeToStream(OutputStream os);
 
-    List<Format> versions = Arrays.asList();
+    List<Format> versions = Arrays.asList(
+            new Version1()
+    );
 
     static void save(OutputStream os) throws IOException {
         if (versions.size() == 0) throw new RuntimeException("There are no defined versions");
