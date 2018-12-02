@@ -68,7 +68,8 @@ public class Storage {
                         Format.load(fis);
                         decoded = true;
                     } catch (IncorrectPasswordException e) {
-                        e.printStackTrace();
+                        pd.getPasswordField().setText("");
+                        pd.setHeaderText("Wrong password. Please try again.");
                     }
                 } else {
                     System.exit(0);
