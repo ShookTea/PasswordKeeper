@@ -2,17 +2,14 @@ package eu.shooktea.passkeeper.format;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.security.*;
 
 public abstract class AbstractFormat implements Format {
 
-    abstract void loadFromInputStream(DataInputStream dis);
-    abstract void storeToOutputStream(DataOutputStream dos);
+    abstract void loadFromInputStream(InputStream dis);
+    abstract void storeToOutputStream(OutputStream dos);
 
     private static SecureRandom random = new SecureRandom();
     private static KeyGenerator generator = null;
@@ -92,8 +89,7 @@ public abstract class AbstractFormat implements Format {
         cipher.init(Cipher.DECRYPT_MODE, key);
         ByteArrayInputStream bais = new ByteArrayInputStream(codedData);
         CipherInputStream cis = new CipherInputStream(bais, cipher);
-        DataInputStream dis = new DataInputStream(cis);
-        this.loadFromInputStream(dis);
+        this.loadFromInputStream(cis);
     }
 
     @Override
@@ -129,8 +125,7 @@ public abstract class AbstractFormat implements Format {
         cipher.init(Cipher.ENCRYPT_MODE, key);
         ByteArrayOutputStream dataFromFormat = new ByteArrayOutputStream();
         CipherOutputStream cos = new CipherOutputStream(dataFromFormat, cipher);
-        DataOutputStream dos = new DataOutputStream(cos);
-        this.storeToOutputStream(dos);
+        this.storeToOutputStream(cos);
         return dataFromFormat.toByteArray();
     }
 
