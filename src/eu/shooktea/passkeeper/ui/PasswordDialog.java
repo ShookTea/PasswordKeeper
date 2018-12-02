@@ -33,7 +33,7 @@ public class PasswordDialog extends Dialog<char[]> {
         Platform.runLater(() -> passwordField.requestFocus());
 
         setResultConverter(dialogButton -> {
-            if (dialogButton == passwordButtonType) {
+            if (dialogButton.getButtonData() == passwordButtonType.getButtonData()) {
                 return passwordField.getText().toCharArray();
             }
             return null;

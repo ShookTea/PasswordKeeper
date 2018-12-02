@@ -115,6 +115,6 @@ public class Storage {
 
     private static List<Cipherable> elements = new ArrayList<>();
     private static int editedIndex = -1;
-    private static char[] password = "temporary password".toCharArray();
+    private static char[] password = new char[0];
     private static File file = null;
 }
