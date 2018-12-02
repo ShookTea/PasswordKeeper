@@ -11,8 +11,8 @@ import java.security.*;
 
 public abstract class AbstractFormat implements Format {
 
-    public abstract void loadFromInputStream(DataInputStream dis);
-    public abstract void storeToOutputStream(DataOutputStream dos);
+    abstract void loadFromInputStream(DataInputStream dis);
+    abstract void storeToOutputStream(DataOutputStream dos);
 
     private static SecureRandom random = new SecureRandom();
     private static KeyGenerator generator = null;
@@ -29,11 +29,11 @@ public abstract class AbstractFormat implements Format {
         return cipher;
     }
 
-    public static String getUserPassword() {
+    private static String getUserPassword() {
         return "Temporary password";
     }
 
-    public static Key generateKey() {
+    private static Key generateKey() {
         try {
             if (generator == null) {
                 int keyBitSize = 256;
@@ -52,17 +52,48 @@ public abstract class AbstractFormat implements Format {
             ByteArrayInputStream bais = new ByteArrayInputStream(data);
             DataInputStream dis = new DataInputStream(bais);
 
+            String password = getUserPassword();
+            byte[] passwordHashed = Hasher.hash(password.getBytes(Charset.forName("UTF-8")));
             byte[] passwordBytes = new byte[dis.readInt()];
             dis.read(passwordBytes);
+            if (!Hasher.validateHash(passwordBytes, passwordHashed)) {
+                throw new Exception("Incorrect password");
+            }
+
             byte[] keyBytes = new byte[dis.readInt()];
             dis.read(keyBytes);
+            Key key = decodeKey(keyBytes, passwordHashed);
+
             byte[] dataBytes = new byte[dis.readInt()];
             dis.read(dataBytes);
             dis.close();
 
+            decodeData(key, dataBytes);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Key decodeKey(byte[] keyBytes, byte[] passwordHash) throws Exception {
+        byte[] keyToUse = new byte[32];
+        for (int i = 0; i < keyToUse.length && i < passwordHash.length; i++) {
+            keyToUse[i] = passwordHash[i];
+        }
+        Key passwordKey = new SecretKeySpec(keyToUse, 0, 32, "AES");
+        Cipher cipher = getCipher();
+        cipher.init(Cipher.DECRYPT_MODE, passwordKey);
+        byte[] decodedKey = cipher.doFinal(keyBytes);
+        return new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+    }
+
+    private void decodeData(Key key, byte[] codedData) throws InvalidKeyException {
+        Cipher cipher = getCipher();
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        ByteArrayInputStream bais = new ByteArrayInputStream(codedData);
+        CipherInputStream cis = new CipherInputStream(bais, cipher);
+        DataInputStream dis = new DataInputStream(cis);
+        this.loadFromInputStream(dis);
     }
 
     @Override
