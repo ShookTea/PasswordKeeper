@@ -10,32 +10,24 @@ class NoteTest {
   }
 
   @Test
-  def creatingNodeWithText() : Unit = {
+  def creatingNoteWithText() : Unit = {
     val text = "ABC123"
-    Assert.assertEquals(text, Note(text).text)
-  }
-
-  @Test
-  def convertToArray() : Unit = {
-    val text = "ABC123"
-    val bytes = Array[Byte](0x41, 0x42, 0x43, 0x31, 0x32, 0x33)
-    Assert.assertArrayEquals(bytes, Note(text).toBytes())
-  }
-
-  @Test
-  def convertFromArray() : Unit = {
-    val text = "ABC123"
-    val bytes = Array[Byte](0x41, 0x42, 0x43, 0x31, 0x32, 0x33)
-    Assert.assertEquals(text, Note(bytes).text)
+    val title = "123ABC"
+    val note = Note(title, text)
+    Assert.assertEquals(title, note.title)
+    Assert.assertEquals(text, note.text)
   }
 
   @Test
   def convertToAndFromArray() : Unit = {
-    val textA = PasswordGenerator(50)
-    val noteA = Note(textA)
+    val textA = PasswordGenerator(500)
+    val titleA = PasswordGenerator(10)
+    val noteA = Note(titleA, textA)
     val bytes = noteA.toBytes()
     val noteB = Note(bytes)
+    val titleB = noteB.title
     val textB = noteB.text
+    Assert.assertEquals(titleA, titleB)
     Assert.assertEquals(textA, textB)
   }
 }
