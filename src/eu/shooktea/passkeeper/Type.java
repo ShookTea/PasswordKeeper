@@ -54,6 +54,10 @@ public enum Type {
         return (T)cls.cast(c);
     }
 
+    public void showNewWindow() {
+        Main.showWindow(editWindow, newTitle);
+    }
+
     private Class cls;
     private String editWindow;
     private String newTitle;

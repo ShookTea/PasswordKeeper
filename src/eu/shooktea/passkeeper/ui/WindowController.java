@@ -1,6 +1,5 @@
 package eu.shooktea.passkeeper.ui;
 
-import eu.shooktea.passkeeper.Main;
 import eu.shooktea.passkeeper.Type;
 import eu.shooktea.passkeeper.type.Note;
 import javafx.fxml.FXML;
@@ -18,6 +17,6 @@ public class WindowController {
 
     @FXML
     private void createNewNote() {
-        Main.showWindow("Note", "Create new note");
+        Type.NOTE.showNewWindow();
     }
 }

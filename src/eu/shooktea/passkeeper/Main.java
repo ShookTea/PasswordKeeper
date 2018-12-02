@@ -24,6 +24,9 @@ public class Main extends Application {
         switch(fxmlFileName) {
             case "Window": title = "Password Keeper"; break;
         }
+        if (fxmlFileName.equals("Window")) {
+            Storage.setObjectToEdit(null);
+        }
         showWindow(fxmlFileName, title, null);
     }
 

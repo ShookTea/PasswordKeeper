@@ -51,7 +51,8 @@ public class Storage {
     }
 
     public static void setObjectToEdit(Cipherable c) {
-        editedIndex = elements.indexOf(c);
+        if (c == null) editedIndex = -1;
+        else editedIndex = elements.indexOf(c);
     }
 
     public static boolean isCurrentlyEdited(Type type) {
