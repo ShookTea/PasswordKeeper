@@ -12,14 +12,6 @@ import static org.junit.Assert.*;
 public class HasherTest {
 
     @Test
-    public void mergeByteArrays() {
-        byte[] arrayA = {1, 2, 3, 4, 5};
-        byte[] arrayB = {10, 11, 12, 13, 14};
-        byte[] result = {1, 2, 3, 4, 5, 10, 11, 12, 13, 14};
-        assertArrayEquals(result, Hasher.mergeArrays(arrayA, arrayB));
-    }
-
-    @Test
     public void generatingHash() throws NoSuchAlgorithmException {
         String password = PasswordGenerator.generate(15);
         byte[] bytes = password.getBytes(Charset.forName("UTF-8"));
