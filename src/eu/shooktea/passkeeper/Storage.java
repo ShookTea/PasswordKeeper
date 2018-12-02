@@ -17,6 +17,10 @@ public class Storage {
         editedIndex = -1;
     }
 
+    public static void clear() {
+        elements.clear();
+    }
+
     public static void store(Cipherable c) {
         elements.add(c);
     }
