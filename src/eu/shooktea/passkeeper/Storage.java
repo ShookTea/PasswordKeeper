@@ -50,6 +50,20 @@ public class Storage {
                 .collect(Collectors.toList());
     }
 
+    public static void setObjectToEdit(Cipherable c) {
+        editedIndex = elements.indexOf(c);
+    }
+
+    public static boolean isCurrentlyEdited(Type type) {
+        if (editedIndex == -1) return false;
+        return type.isInstance(elements.get(editedIndex));
+    }
+
+    public static <T extends Cipherable> T getCurrentlyEdited(Type type) {
+        if (editedIndex == -1) return null;
+        return type.mapInstance(elements.get(editedIndex));
+    }
+
     public static List<Cipherable> getAll() {
         return elements;
     }

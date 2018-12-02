@@ -7,6 +7,7 @@ import eu.shooktea.passkeeper.type.Note;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.List;
@@ -26,6 +27,16 @@ public class WindowController {
         text.setCellValueFactory(new PropertyValueFactory<>("text"));
         notesTable.getColumns().addAll(title, text);
         notesTable.setItems(FXCollections.observableList(notes));
+        notesTable.setRowFactory(tv -> {
+            TableRow<Note> row = new TableRow<>();
+            row.setOnMouseClicked(e -> {
+                if (e.getClickCount() == 2 && (!row.isEmpty())) {
+                    Storage.setObjectToEdit(row.getItem());
+                    Main.showWindow("Note", "Create new note");
+                }
+            });
+            return row;
+        });
     }
 
     @FXML
