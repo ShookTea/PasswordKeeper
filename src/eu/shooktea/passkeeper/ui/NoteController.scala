@@ -14,7 +14,7 @@ class NoteController {
   def saveNote() : Unit = {
     val title: String = noteTitle.getText
     val text: String = noteText.getText
-    Storage savedCipherableElement Note(title, text)
+    Storage savedCipherableElement new Note(title, text)
     Main showWindow "Window"
   }
 }
