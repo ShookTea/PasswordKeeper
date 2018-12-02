@@ -14,6 +14,8 @@ class Main extends Application {
 object Main {
   def main(args: Array[String]) : Unit = Application.launch(classOf[Main], args: _*)
 
+  def showWindow(fxmlFileName: String) : Unit = showWindow(fxmlFileName, null, null)
+
   def showWindow(fxmlFileName: String, title: String = null, stage: Stage = null) : Unit = {
     if (stage != null) {
       Main.stage = stage
