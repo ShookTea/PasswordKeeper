@@ -44,13 +44,12 @@ public abstract class AbstractFormat implements Format {
     }
 
     @Override
-    public void loadFromData(byte[] data) {
+    public void loadFromStream(InputStream is) {
         try {
-            ByteArrayInputStream bais = new ByteArrayInputStream(data);
-            DataInputStream dis = new DataInputStream(bais);
-
+            DataInputStream dis = new DataInputStream(is);
             String password = getUserPassword();
             byte[] passwordHashed = Hasher.hash(password.getBytes(Charset.forName("UTF-8")));
+
             byte[] passwordBytes = new byte[dis.readInt()];
             dis.read(passwordBytes);
             if (!Hasher.validateHash(passwordBytes, passwordHashed)) {
@@ -93,7 +92,7 @@ public abstract class AbstractFormat implements Format {
     }
 
     @Override
-    public byte[] storeData() {
+    public void writeToStream(OutputStream os) {
         try {
             Key key = generateKey();
             String password = getUserPassword();
@@ -103,8 +102,7 @@ public abstract class AbstractFormat implements Format {
             byte[] keyBytes = encodeKey(key, passwordHash);
             byte[] dataBytes = encodeData(key);
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            DataOutputStream dos = new DataOutputStream(baos);
+            DataOutputStream dos = new DataOutputStream(os);
 
             dos.writeInt(passwordBytes.length);
             dos.write(passwordBytes);
@@ -114,7 +112,6 @@ public abstract class AbstractFormat implements Format {
             dos.write(dataBytes);
 
             dos.close();
-            return baos.toByteArray();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

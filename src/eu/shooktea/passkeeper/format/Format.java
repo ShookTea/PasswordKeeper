@@ -10,8 +10,8 @@ import java.util.Optional;
 
 public interface Format {
     int getVersionNumber();
-    void loadFromData(byte[] data);
-    byte[] storeData();
+    void loadFromStream(InputStream is);
+    void writeToStream(OutputStream os);
 
     List<Format> versions = Arrays.asList();
 
@@ -23,8 +23,8 @@ public interface Format {
         DataOutputStream dos = new DataOutputStream(os);
         dos.writeInt(MAGIC_NUMBER);
         dos.writeInt(format.getVersionNumber());
-        byte[] data = format.storeData();
-        dos.write(format.storeData(), 0, data.length);
+        format.writeToStream(dos);
+        dos.close();
     }
 
     static void load(InputStream is) throws IOException {
@@ -44,16 +44,9 @@ public interface Format {
             throw new IOException("Unknown format");
         }
 
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int nRead;
-        byte[] data = new byte[16384];
-        while ((nRead = dis.read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, nRead);
-        }
-        dis.close();
-        data = buffer.toByteArray();
         Storage.clear();
-        format.get().loadFromData(data);
+        format.get().loadFromStream(dis);
+        dis.close();
     }
 
     int MAGIC_NUMBER = 0xADEEF099;
