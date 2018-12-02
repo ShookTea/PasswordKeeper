@@ -8,17 +8,17 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-public interface AbstractVersion {
+public interface Format {
     int getVersionNumber();
     void loadFromData(byte[] data);
     byte[] storeData();
 
-    List<AbstractVersion> versions = Arrays.asList();
+    List<Format> versions = Arrays.asList();
 
     static void saveToFile(File file) throws IOException {
         if (versions.size() == 0) throw new IOException("There are no defined versions");
-        AbstractVersion format = versions.stream()
-                .sorted(Comparator.comparingInt(AbstractVersion::getVersionNumber))
+        Format format = versions.stream()
+                .sorted(Comparator.comparingInt(Format::getVersionNumber))
                 .findFirst().get();
 
         FileOutputStream fos = new FileOutputStream(file);
@@ -39,7 +39,7 @@ public interface AbstractVersion {
         }
 
         int version = dis.readInt();
-        Optional<AbstractVersion> format = versions.stream()
+        Optional<Format> format = versions.stream()
                 .filter(abstractVersion -> abstractVersion.getVersionNumber() == version)
                 .findFirst();
         if (!format.isPresent()) {
