@@ -9,7 +9,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.Map;
 
 public enum Type {
-    NOTE("Note", "Note", "Create new note", "Edit note");
+    NOTE("Note", "Note", "Create new note", "Edit note"),
+    PASSWORD("Password", "Password", "Create new password", "Edit password");
 
     private Type(String typeName, String editWindow, String newTitle, String editTitle) {
         try {
