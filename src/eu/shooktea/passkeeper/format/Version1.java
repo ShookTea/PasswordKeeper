@@ -32,7 +32,7 @@ public class Version1 extends AbstractFormat {
 
     void loadByIdentifier(String identifier, DataInputStream dis) throws IOException {
         switch (identifier) {
-            case "NOTE": Storage.store(loadNote(dis)); break;
+            case "NOTE": Storage.getAll().add(loadNote(dis)); break;
             case "EOF": break;
             default: throw new IOException("Wrong format");
         }
