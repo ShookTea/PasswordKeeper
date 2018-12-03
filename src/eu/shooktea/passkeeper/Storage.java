@@ -29,6 +29,13 @@ public class Storage {
         editedIndex = -1;
     }
 
+    public static void deleteCipherableElement() {
+        if (editedIndex != -1) {
+            remove(editedIndex);
+        }
+        editedIndex = -1;
+    }
+
     public static void clear() {
         elements.clear();
     }
@@ -38,19 +45,24 @@ public class Storage {
         saveData();
     }
 
-    public static void update(int index, Cipherable c) {
+    private static void update(int index, Cipherable c) {
         elements.set(index, c);
         saveData();
     }
 
-    public static <T extends Cipherable> List<T> filter(Type t) {
+    private static void remove(int index) {
+        elements.remove(index);
+        saveData();
+    }
+
+    static <T extends Cipherable> List<T> filter(Type t) {
         return elements.stream()
                 .filter(t::isInstance)
                 .map(t::<T>mapInstance)
                 .collect(Collectors.toList());
     }
 
-    public static void setObjectToEdit(Cipherable c) {
+    static void setObjectToEdit(Cipherable c) {
         if (c == null) editedIndex = -1;
         else editedIndex = elements.indexOf(c);
     }
@@ -69,7 +81,7 @@ public class Storage {
         return elements;
     }
 
-    public static void loadData() throws IOException {
+    static void loadData() throws IOException {
         File f = getFile();
         if (!f.exists()) {
             CreatePasswordDialog cpd = new CreatePasswordDialog();
