@@ -59,30 +59,29 @@ public class Version1 extends AbstractFormat {
         return 1;
     }
 
-    protected static Note loadNote(DataInputStream dis) throws IOException {
-        String title = dis.readBoolean() ? dis.readUTF() : "";
-        String text = dis.readBoolean() ? dis.readUTF() : "";
+    protected Note loadNote(DataInputStream dis) throws IOException {
+        String title = readUtfIfExists(dis);
+        String text = readUtfIfExists(dis);
         return new Note(title, text);
     }
 
-    protected static void saveNote(DataOutputStream dos, Note note) throws IOException {
+    protected void saveNote(DataOutputStream dos, Note note) throws IOException {
         dos.writeUTF("NOTE");
-        String title = note.getTitle();
-        if (title == null || title.length() == 0) {
-            dos.writeBoolean(false);
-        }
-        else {
-            dos.writeBoolean(true);
-            dos.writeUTF(title);
-        }
+        writeUtfIfExists(dos, note.getTitle());
+        writeUtfIfExists(dos, note.getText());
+    }
 
-        String text = note.getText();
-        if (text == null || text.length() == 0) {
+    protected void writeUtfIfExists(DataOutputStream dos, String utf) throws IOException {
+        if (utf == null || utf.length() == 0) {
             dos.writeBoolean(false);
         }
         else {
             dos.writeBoolean(true);
-            dos.writeUTF(text);
+            dos.writeUTF(utf);
         }
+    }
+
+    protected String readUtfIfExists(DataInputStream dis) throws IOException {
+        return dis.readBoolean() ? dis.readUTF() : "";
     }
 }
