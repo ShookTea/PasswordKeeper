@@ -14,7 +14,8 @@ public interface Format {
     void writeToStream(OutputStream os);
 
     List<Format> versions = Arrays.asList(
-            new Version1()
+            new Version1(),
+            new Version2()
     );
 
     static void save(OutputStream os) throws IOException {
