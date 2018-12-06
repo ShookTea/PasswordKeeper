@@ -21,7 +21,7 @@ public interface Format {
     static void save(OutputStream os) throws IOException {
         if (versions.size() == 0) throw new RuntimeException("There are no defined versions");
         Format format = versions.stream()
-                .sorted(Comparator.comparingInt(Format::getVersionNumber))
+                .sorted(Comparator.comparingInt(Format::getVersionNumber).reversed())
                 .findFirst().get();
         DataOutputStream dos = new DataOutputStream(os);
         dos.writeInt(MAGIC_NUMBER);
