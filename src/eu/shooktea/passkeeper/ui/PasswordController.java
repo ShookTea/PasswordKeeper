@@ -1,5 +1,6 @@
 package eu.shooktea.passkeeper.ui;
 
+import eu.shooktea.passkeeper.PasswordGenerator;
 import eu.shooktea.passkeeper.Storage;
 import eu.shooktea.passkeeper.Type;
 import eu.shooktea.passkeeper.type.Password;
@@ -31,9 +32,14 @@ public class PasswordController extends AbstractController {
         visiblePassword.textProperty().bindBidirectional(password.textProperty());
 
         passwordBox.getChildren().remove(visiblePassword);
-        showPassword.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            passwordBox.getChildren().set(0, newValue ? visiblePassword : password);
-        });
+        showPassword.selectedProperty().addListener(
+                (obsVal, oldVal, newVal) -> passwordBox.getChildren().set(0, newVal ? visiblePassword : password)
+        );
+    }
+
+    @FXML
+    private void generatePassword() {
+        password.setText(PasswordGenerator.generate(20));
     }
 
     @FXML
