@@ -1,5 +1,6 @@
 package eu.shooktea.passkeeper.ui;
 
+import eu.shooktea.passkeeper.Cipherable;
 import eu.shooktea.passkeeper.Main;
 import eu.shooktea.passkeeper.Storage;
 import javafx.fxml.FXML;
@@ -29,6 +30,11 @@ public abstract class AbstractController {
             Storage.deleteCipherableElement();
             Main.showWindow("Window");
         }
+    }
+
+    protected void saveElement(Cipherable cipherable) {
+        Storage.saveCipherableElement(cipherable);
+        goBack();
     }
 
     protected abstract String getTypeName();
