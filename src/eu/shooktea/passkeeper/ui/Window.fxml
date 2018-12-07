@@ -23,7 +23,7 @@
                     <columns>
                       <TableColumn prefWidth="204.0" text="Name" />
                       <TableColumn prefWidth="394.0" text="Username" />
-                        <TableColumn prefWidth="75.0" text="Password" />
+                      <TableColumn prefWidth="75.0" text="Password" />
                     </columns>
                      <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

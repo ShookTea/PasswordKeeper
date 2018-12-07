@@ -23,9 +23,9 @@ public class Password implements Cipherable {
     public Map<String, String> getColumnsWithProperties() {
         Map<String, String> columns = new HashMap<>();
         columns.put("Name", "name");
-        columns.put("URL", "url");
         columns.put("Login", "login");
         columns.put("Password", "password");
+        columns.put("URL", "url");
         return columns;
     }
 
