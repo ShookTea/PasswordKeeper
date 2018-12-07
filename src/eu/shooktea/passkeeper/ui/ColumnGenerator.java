@@ -1,5 +1,8 @@
 package eu.shooktea.passkeeper.ui;
 
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
+
 public class ColumnGenerator {
     public ColumnGenerator() {}
 
@@ -13,6 +16,12 @@ public class ColumnGenerator {
         return this;
     }
 
-    public String label = "";
-    public String fieldName = "";
+    public <T> TableColumn<T, String> apply() {
+        TableColumn<T, String> column = new TableColumn<>(label);
+        column.setCellValueFactory(new PropertyValueFactory<>(fieldName));
+        return column;
+    }
+
+    private String label = "";
+    private String fieldName = "";
 }

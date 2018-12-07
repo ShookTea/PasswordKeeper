@@ -34,11 +34,7 @@ public enum Type {
             Cipherable chr = (Cipherable)cls.newInstance();
             table.getColumns().setAll(chr.getColumnsWithProperties()
                     .stream()
-                    .map(generator -> {
-                    TableColumn<T, String> column = new TableColumn<>(generator.label);
-                    column.setCellValueFactory(new PropertyValueFactory<>(generator.fieldName));
-                    return column;
-                    })
+                    .map(ColumnGenerator::<T>apply)
                     .collect(Collectors.toList())
             );
         } catch (Exception ignored) {}
