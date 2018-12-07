@@ -27,7 +27,7 @@ public class Password implements Cipherable {
         return Arrays.asList(
                 new ColumnGenerator().label("Name").fieldName("name"),
                 new ColumnGenerator().label("Login").fieldName("login"),
-                new ColumnGenerator().label("Password").fieldName("password"),
+                new ColumnGenerator().hide().label("Password").fieldName("password"),
                 new ColumnGenerator().label("URL").fieldName("url")
         );
     }
