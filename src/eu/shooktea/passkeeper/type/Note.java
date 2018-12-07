@@ -1,11 +1,12 @@
 package eu.shooktea.passkeeper.type;
 
 import eu.shooktea.passkeeper.Cipherable;
+import eu.shooktea.passkeeper.ui.ColumnGenerator;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 public class Note implements Cipherable {
     public Note(String title, String text) {
@@ -18,11 +19,11 @@ public class Note implements Cipherable {
     }
 
     @Override
-    public Map<String, String> getColumnsWithProperties() {
-        Map<String, String> ret = new HashMap<>();
-        ret.put("Title", "title");
-        ret.put("Text", "text");
-        return ret;
+    public List<ColumnGenerator> getColumnsWithProperties() {
+        return Arrays.asList(
+                new ColumnGenerator().label("Title").fieldName("title"),
+                new ColumnGenerator().label("Text").fieldName("text")
+        );
     }
 
     public String getTitle() {

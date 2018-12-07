@@ -1,7 +1,9 @@
 package eu.shooktea.passkeeper;
 
-import java.util.Map;
+import eu.shooktea.passkeeper.ui.ColumnGenerator;
+
+import java.util.List;
 
 public interface Cipherable {
-    Map<String, String> getColumnsWithProperties();
+    List<ColumnGenerator> getColumnsWithProperties();
 }

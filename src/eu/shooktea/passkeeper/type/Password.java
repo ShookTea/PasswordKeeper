@@ -1,10 +1,13 @@
 package eu.shooktea.passkeeper.type;
 
 import eu.shooktea.passkeeper.Cipherable;
+import eu.shooktea.passkeeper.ui.ColumnGenerator;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Password implements Cipherable {
@@ -20,13 +23,13 @@ public class Password implements Cipherable {
     }
 
     @Override
-    public Map<String, String> getColumnsWithProperties() {
-        Map<String, String> columns = new HashMap<>();
-        columns.put("Name", "name");
-        columns.put("Login", "login");
-        columns.put("Password", "password");
-        columns.put("URL", "url");
-        return columns;
+    public List<ColumnGenerator> getColumnsWithProperties() {
+        return Arrays.asList(
+                new ColumnGenerator().label("Name").fieldName("name"),
+                new ColumnGenerator().label("Login").fieldName("login"),
+                new ColumnGenerator().label("Password").fieldName("password"),
+                new ColumnGenerator().label("URL").fieldName("url")
+        );
     }
 
     public String getName() {

@@ -1,12 +1,14 @@
 package eu.shooktea.passkeeper;
 
+import eu.shooktea.passkeeper.ui.ColumnGenerator;
 import javafx.collections.FXCollections;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public enum Type {
     NOTE("Note", "Note", "Create new note", "Edit note"),
@@ -30,13 +32,15 @@ public enum Type {
     public <T extends Cipherable> void applyTableViewMaker(TableView<T> table) {
         try {
             Cipherable chr = (Cipherable)cls.newInstance();
-            table.getColumns().clear();
-            Map<String, String> columns = chr.getColumnsWithProperties();
-            for(String key : columns.keySet()) {
-                TableColumn<T, String> column = new TableColumn<>(key);
-                column.setCellValueFactory(new PropertyValueFactory<>(columns.get(key)));
-                table.getColumns().add(column);
-            }
+            table.getColumns().setAll(chr.getColumnsWithProperties()
+                    .stream()
+                    .map(generator -> {
+                    TableColumn<T, String> column = new TableColumn<>(generator.label);
+                    column.setCellValueFactory(new PropertyValueFactory<>(generator.fieldName));
+                    return column;
+                    })
+                    .collect(Collectors.toList())
+            );
         } catch (Exception ignored) {}
         table.setItems(FXCollections.observableList(Storage.filter(this)));
         table.setRowFactory(tv -> {
