@@ -6,13 +6,16 @@ import eu.shooktea.passkeeper.type.Password;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 
 public class PasswordController extends AbstractController {
 
     @FXML private TextField passwordName;
     @FXML private TextField username;
     @FXML private PasswordField password;
+    @FXML private TextField visiblePassword;
     @FXML private TextField url;
+    @FXML private HBox passwordBox;
 
     @FXML
     private void initialize() {
@@ -23,6 +26,11 @@ public class PasswordController extends AbstractController {
             password.setText(p.getPassword());
             url.setText(p.getUrl());
         }
+        passwordBox.getChildren().remove(visiblePassword);
+        visiblePassword.layoutXProperty().bind(password.layoutXProperty());
+        visiblePassword.layoutYProperty().bind(password.layoutYProperty());
+        visiblePassword.visibleProperty().bind(password.visibleProperty().not());
+        visiblePassword.textProperty().bind(password.textProperty());
     }
 
     @FXML
