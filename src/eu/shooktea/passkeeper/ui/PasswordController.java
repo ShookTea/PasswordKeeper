@@ -14,7 +14,7 @@ public class PasswordController extends AbstractController {
 
     @FXML
     private void savePassword() {
-        this.saveElement(new Password(passwordName.getText(), username.getText(), password.getText(), url.getText()));
+        this.saveElement(new Password(passwordName.getText(), url.getText(), username.getText(), password.getText()));
     }
 
     @Override
