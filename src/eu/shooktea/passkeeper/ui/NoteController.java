@@ -9,7 +9,7 @@ import javafx.scene.control.*;
 
 import java.util.Optional;
 
-public class NoteController {
+public class NoteController extends AbstractController {
     @FXML private TextField noteTitle;
     @FXML private TextArea noteText;
 
@@ -20,11 +20,6 @@ public class NoteController {
             noteTitle.setText(n.getTitle());
             noteText.setText(n.getText());
         }
-    }
-
-    @FXML
-    private void goBack() {
-        Main.showWindow("Window");
     }
 
     @FXML
