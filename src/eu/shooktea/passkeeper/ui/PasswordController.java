@@ -12,10 +12,16 @@ public class PasswordController extends AbstractController {
 
     @FXML
     private void savePassword() {
-
+        this.goBack();
     }
 
-    @FXML
-    private void deletePassword() {
+    @Override
+    protected String getTypeName() {
+        return "password";
+    }
+
+    @Override
+    protected String getElementName() {
+        return passwordName.getText();
     }
 }

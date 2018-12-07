@@ -14,7 +14,7 @@
         <items>
             <Button defaultButton="true" mnemonicParsing="false" onAction="#saveNote" text="Save" />
           <Button mnemonicParsing="false" onAction="#goBack" text="Close" />
-            <Button mnemonicParsing="false" onAction="#deleteNote" text="Delete" />
+            <Button mnemonicParsing="false" onAction="#deleteElement" text="Delete" />
         </items>
       </ToolBar>
       <Label text="Title:" VBox.vgrow="NEVER">

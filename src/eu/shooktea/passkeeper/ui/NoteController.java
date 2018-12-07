@@ -7,8 +7,6 @@ import eu.shooktea.passkeeper.type.Note;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.util.Optional;
-
 public class NoteController extends AbstractController {
     @FXML private TextField noteTitle;
     @FXML private TextArea noteText;
@@ -26,20 +24,16 @@ public class NoteController extends AbstractController {
     private void saveNote() {
         Note note = new Note(noteTitle.getText(), noteText.getText());
         Storage.saveCipherableElement(note);
-        Main.showWindow("Window");
+        this.goBack();
     }
 
-    @FXML
-    private void deleteNote() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation");
-        alert.setHeaderText("Deleting note");
-        alert.setContentText("Do you really want to delete note '" + noteTitle.getText() + "'?");
+    @Override
+    protected String getTypeName() {
+        return "note";
+    }
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            Storage.deleteCipherableElement();
-            Main.showWindow("Window");
-        }
+    @Override
+    protected String getElementName() {
+        return noteTitle.getText();
     }
 }
