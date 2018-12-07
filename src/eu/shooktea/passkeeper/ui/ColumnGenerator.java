@@ -2,6 +2,7 @@ package eu.shooktea.passkeeper.ui;
 
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Callback;
 
 public class ColumnGenerator {
     public ColumnGenerator() {}
@@ -24,10 +25,29 @@ public class ColumnGenerator {
     public <T> TableColumn<T, String> apply() {
         TableColumn<T, String> column = new TableColumn<>(label);
         column.setCellValueFactory(new PropertyValueFactory<>(fieldName));
-        if (hide) {
-            column.setCellFactory(tStringTableColumn -> new PasswordFieldCell());
-        }
+        column.setCellFactory(this.getCellFactory(hide));
         return column;
+    }
+
+    private <T> Callback<TableColumn<T, String>, TableCell<T, String>> getCellFactory(boolean hide) {
+        return tStringTableColumn -> {
+            TableCell<T, String> cell;
+            if (hide) {
+                cell = new PasswordFieldCell<>();
+            } else {
+                cell = new TableCell<T, String>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setText(item);
+                    }
+                };
+            }
+            cell.setOnMouseClicked(event -> {
+                System.out.println(cell.getItem());
+            });
+            return cell;
+        };
     }
 
     private String label = "";
