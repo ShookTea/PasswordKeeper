@@ -1,8 +1,13 @@
 package eu.shooktea.passkeeper.ui;
 
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
+
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 
 public class ColumnGenerator {
     public ColumnGenerator() {}
@@ -44,7 +49,9 @@ public class ColumnGenerator {
                 };
             }
             cell.setOnMouseClicked(event -> {
-                System.out.println(cell.getItem());
+                StringSelection selection = new StringSelection(cell.getItem());
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(selection, selection);
             });
             return cell;
         };
