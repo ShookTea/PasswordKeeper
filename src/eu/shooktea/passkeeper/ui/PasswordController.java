@@ -6,6 +6,7 @@ import eu.shooktea.passkeeper.type.Password;
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
 
 public class PasswordController extends AbstractController {
@@ -16,6 +17,7 @@ public class PasswordController extends AbstractController {
     @FXML private TextField visiblePassword;
     @FXML private TextField url;
     @FXML private HBox passwordBox;
+    @FXML private ToggleButton showPassword;
 
     @FXML
     private void initialize() {
@@ -26,11 +28,12 @@ public class PasswordController extends AbstractController {
             password.setText(p.getPassword());
             url.setText(p.getUrl());
         }
+        visiblePassword.textProperty().bindBidirectional(password.textProperty());
+
         passwordBox.getChildren().remove(visiblePassword);
-        visiblePassword.layoutXProperty().bind(password.layoutXProperty());
-        visiblePassword.layoutYProperty().bind(password.layoutYProperty());
-        visiblePassword.visibleProperty().bind(password.visibleProperty().not());
-        visiblePassword.textProperty().bind(password.textProperty());
+        showPassword.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            passwordBox.getChildren().set(0, newValue ? visiblePassword : password);
+        });
     }
 
     @FXML
